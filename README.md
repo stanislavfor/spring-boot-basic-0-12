@@ -104,7 +104,7 @@ mvn spring-boot:run
 После запуска приложения можно получить доступ к API через следующие адреса в браузере:
 
 - Задачи (Tasks):
-    - Получение всех задач: `http://localhost:8080/tasks`
+    - Получение всех задач: http://localhost:8080/tasks
     - Получение задачи по идентификатору: `http://localhost:8080/tasks/{id}`
     - Создание задачи: `POST http://localhost:8080/tasks`
     - Обновление задачи: `PUT http://localhost:8080/tasks/{id}`
@@ -113,7 +113,7 @@ mvn spring-boot:run
     - Получение задач по статусу выполнения: `http://localhost:8080/tasks/completed/{completed}`
 
 - Подписчики (Subscribers):
-    - Получение всех подписчиков: `http://localhost:8080/subscribers`
+    - Получение всех подписчиков: http://localhost:8080/subscribers
     - Получение подписчика по идентификатору: `http://localhost:8080/subscribers/{id}`
     - Создание подписчика: `POST http://localhost:8080/subscribers`
     - Обновление подписчика: `PUT http://localhost:8080/subscribers/{id}`
@@ -123,7 +123,7 @@ mvn spring-boot:run
 
 Можно получить доступ к консоли базы данных H2 по следующему адресу:
 
-- Консоль H2: `http://localhost:8080/h2-console`
+- Консоль H2: http://localhost:8080/h2-console
 
 Для подключения использовать следующие параметры:
 - JDBC URL: `jdbc:h2:file:./taskdb`
@@ -154,7 +154,7 @@ mvn spring-boot:run
 
 - SQL-запросы для создания таблиц:
 
-```sql
+```
    CREATE TABLE IF NOT EXISTS task (
        id BIGINT AUTO_INCREMENT PRIMARY KEY,
        title VARCHAR(255) NOT NULL,
@@ -183,7 +183,7 @@ mvn spring-boot:run
 
    После создания таблиц, вставить записи в таблицу `Task` с помощью SQL-запроса для вставки записи:
 
-```sql
+```
     INSERT INTO task (title, description, due_date, priority, completed)
     VALUES ('Task 1', 'Description for Task 1', '2025-05-25', 'High', FALSE);
 ```
@@ -192,7 +192,7 @@ mvn spring-boot:run
 
    После создания таблиц, вставить записи в таблицу `Subscriber` с помощью SQL-запроса для вставки записи:
 
-```sql
+```
     INSERT INTO subscriber (full_name, email_address)
     VALUES ('Subscriber 1', 'subscriber1@example.com');
 ```
@@ -201,21 +201,28 @@ mvn spring-boot:run
 
    После вставки записей в таблицы `Task` и `Subscriber`, нужно связать их в таблице `subscriber_task` с помощью SQL-запроса для связывания записей:
 
-```sql
+```
     INSERT INTO subscriber_task (subscriber_id, task_id)
     VALUES (1, 1);
 ```
 
+или, например <br>
+
+```
+    INSERT INTO subscriber_task (subscriber_id, task_id)
+    VALUES (1, 2);
+```
 
 
-### Примеры запросов
+
+### Примеры запросов в консоли (Console) инструмента разработчика в браузере
 
 - Создание задачи:
   ```sh
   curl -X POST http://localhost:8080/tasks -H "Content-Type: application/json" -d '{
       "title": "Test Task",
       "description": "Test Description",
-      "dueDate": "2023-12-31",
+      "dueDate": "2025-05-01",
       "priority": "High",
       "completed": false
   }'
@@ -224,10 +231,493 @@ mvn spring-boot:run
 - Создание подписчика:
   ```sh
   curl -X POST http://localhost:8080/subscribers -H "Content-Type: application/json" -d '{
-      "fullName": "John Doe",
-      "emailAddress": "john.doe@example.com"
+      "fullName": "Subscriber 1",
+      "emailAddress": "subscriber1@example.com"
   }'
   ```
+
+Для добавления данных в базу данных для сущностей `Task`, `Subscriber` и связи между ними в таблице `subscriber_task`, <br> 
+можно использовать различные методы, например, терминал, консоль H2 или браузер.
+
+### Добавление данных в базе данных
+
+#### Добавление данных через терминал
+
+##### Добавление новой задачи
+
+1. Открыть терминал.
+2. Ввести команду для добавления новой задачи:
+
+   ```sh
+   curl -X POST http://localhost:8080/tasks -H "Content-Type: application/json" -d '{
+       "title": "Task 1",
+       "description": "Description for Task 1",
+       "dueDate": "2025-05-25",
+       "priority": "High",
+       "completed": false
+   }'
+   ```
+
+##### Добавление нового подписчика
+
+1. Открыть терминал.
+2. Ввести команду для добавления нового подписчика:
+
+   ```sh
+   curl -X POST http://localhost:8080/subscribers -H "Content-Type: application/json" -d '{
+       "fullName": "Subscriber 1",
+       "emailAddress": "subscriber1@example.com"
+   }'
+   ```
+
+##### Добавление связи между задачей и подписчиком
+
+1. Открыть терминал.
+2. Ввести команду для добавления связи между задачей и подписчиком:
+
+   ```sh
+   curl -X POST http://localhost:8080/subscribers/1/tasks/1 -H "Content-Type: application/json"
+   ```
+
+   , где `1` - это идентификатор подписчика, а `1` - это идентификатор задачи.
+
+
+#### Добавление данных через консоль H2
+
+##### Добавление новой задачи
+
+1. Открыть консоль H2 по адресу `http://localhost:8080/h2-console`.
+2. Подключиться к базе данных, используя следующие параметры:
+  - **JDBC URL**: `jdbc:h2:file:./taskdb`
+  - **User Name**: `sa`
+  - **Password**: (оставить пустым)
+3. Ввести SQL-запрос для добавления новой задачи:
+   ```
+   INSERT INTO task (title, description, due_date, priority, completed)
+   VALUES ('Task 1', 'Description for Task 1', '2025-05-25', 'High', FALSE);
+   ```
+4. Нажать кнопку "Run" для выполнения запроса.
+
+
+##### Добавление нового подписчика
+
+1. Открыть консоль H2 по адресу `http://localhost:8080/h2-console`.
+2. Подключиться к базе данных, используя следующие параметры:
+  - **JDBC URL**: `jdbc:h2:file:./taskdb`
+  - **User Name**: `sa`
+  - **Password**: (оставить пустым)
+3. Ввести SQL-запрос для добавления нового подписчика:
+   ```
+   INSERT INTO subscriber (full_name, email_address)
+   VALUES ('Subscriber 1', 'subscriber1@example.com');
+   ```
+4. Нажать кнопку "Run" для выполнения запроса.
+
+
+##### Добавление связи между задачей и подписчиком
+
+1. Открыть консоль H2 по адресу `http://localhost:8080/h2-console`.
+2. Подключиться к базе данных, используя следующие параметры:
+  - **JDBC URL**: `jdbc:h2:file:./taskdb`
+  - **User Name**: `sa`
+  - **Password**: (оставить пустым)
+3. Ввести SQL-запрос для добавления связи между задачей и подписчиком:
+   ```
+   INSERT INTO subscriber_task (subscriber_id, task_id)
+   VALUES (1, 1);
+   ```
+4. Нажать кнопку "Run" для выполнения запроса.
+
+
+#### Добавление данных через браузер
+
+##### Добавление новой задачи
+
+1. Открыть браузер.
+2. Ввести URL в адресной строке:
+   ```plaintext
+   http://localhost:8080/tasks
+   ```
+3. Использовать инструмент разработчика браузера (например, Chrome DevTools) для отправки POST-запроса:
+  - Открыть вкладку "Console".
+  - Ввести код JavaScript для отправки POST-запроса:
+    ```javascript
+    fetch('http://localhost:8080/tasks', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            title: 'Task 1',
+            description: 'Description for Task 1',
+            dueDate: '2025-05-25',
+            priority: 'High',
+            completed: false
+        })
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+    ```
+4. Нажать клавишу `Enter` для выполнения кода.
+
+
+##### Добавление нового подписчика
+
+1. Открыть браузер.
+2. Ввести URL в адресной строке:
+   ```plaintext
+   http://localhost:8080/subscribers
+   ```
+3. Использовать инструмент разработчика браузера (например, Chrome DevTools) для отправки POST-запроса:
+  - Открыть вкладку "Console".
+  - Ввести код JavaScript для отправки POST-запроса:
+    ```javascript
+    fetch('http://localhost:8080/subscribers', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            fullName: 'Subscriber 1',
+            emailAddress: 'subscriber1@example.com'
+        })
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+    ```
+4. Нажать клавишу `Enter` для выполнения кода.
+
+
+##### Добавление связи между задачей и подписчиком
+
+1. Открыть браузер.
+2. Ввести URL в адресной строке:
+   ```plaintext
+   http://localhost:8080/subscribers/1/tasks/1
+   ```
+3. Использовать инструмент разработчика браузера (например, Chrome DevTools) для отправки POST-запроса:
+  - Открыть вкладку "Console".
+  - Ввести код JavaScript для отправки POST-запроса:
+    ```javascript
+    fetch('http://localhost:8080/subscribers/1/tasks/1', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+    ```
+4. Нажать клавишу `Enter` для выполнения кода.
+
+
+#### Пример запроса с использованием Postman
+
+
+##### Запрос для добавления новой задачи
+
+1. Открыть Postman.
+2. Создать новый запрос.
+3. Установить метод запроса на `POST`.
+4. Ввести URL `http://localhost:8080/tasks`.
+5. Установить заголовок `Content-Type` на `application/json`.
+6. Ввести тело запроса в формате JSON:
+   ```json
+   {
+       "title": "Task 1",
+       "description": "Description for Task 1",
+       "dueDate": "2025-05-25",
+       "priority": "High",
+       "completed": false
+   }
+   ```
+7. Отправить запрос.
+
+
+##### Запрос для добавления нового подписчика
+
+1. Открыть Postman.
+2. Создать новый запрос.
+3. Установить метод запроса на `POST`.
+4. Ввести URL `http://localhost:8080/subscribers`.
+5. Установить заголовок `Content-Type` на `application/json`.
+6. Ввести тело запроса в формате JSON:
+   ```json
+   {
+       "fullName": "Subscriber 1",
+       "emailAddress": "subscriber1@example.com"
+   }
+   ```
+7. Отправить запрос.
+
+
+##### Запрос для добавления связи между задачей и подписчиком
+
+1. Открыть Postman.
+2. Создать новый запрос.
+3. Установить метод запроса на `POST`.
+4. Ввести URL `http://localhost:8080/subscribers/1/tasks/1`.
+5. Установить заголовок `Content-Type` на `application/json`.
+6. Отправить запрос.
+
+
+#### Пример запроса с использованием Python и библиотеки `requests`
+
+Можно отправлять запросы с использованием Python и библиотеки `requests`:
+
+##### Запрос для добавления новой задачи
+
+```
+import requests
+import json
+
+url = 'http://localhost:8080/tasks'
+headers = {'Content-Type': 'application/json'}
+data = {
+    'title': 'Task 1',
+    'description': 'Description for Task 1',
+    'dueDate': '2025-05-25',
+    'priority': 'High',
+    'completed': False
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+##### Запрос для добавления нового подписчика
+
+```
+import requests
+import json
+
+url = 'http://localhost:8080/subscribers'
+headers = {'Content-Type': 'application/json'}
+data = {
+    'fullName': 'Subscriber 1',
+    'emailAddress': 'subscriber1@example.com'
+}
+
+response = requests.post(url, headers=headers, data=json.dumps(data))
+print(response.json())
+```
+
+##### Запрос для добавления связи между задачей и подписчиком
+
+```
+import requests
+
+url = 'http://localhost:8080/subscribers/1/tasks/1'
+headers = {'Content-Type': 'application/json'}
+
+response = requests.post(url, headers=headers)
+print(response.json())
+```
+
+
+
+### Редактирование данных в базе данных
+
+#### Редактирование задачи
+
+- Через терминал:
+
+   Открыть терминал и ввести команду для редактирования задачи:
+
+   ```sh
+   curl -X PUT http://localhost:8080/tasks/1 -H "Content-Type: application/json" -d '{
+       "title": "Updated Task",
+       "description": "Updated Description for Task",
+       "dueDate": "2023-12-31",
+       "priority": "High",
+       "completed": true
+   }'
+   ```
+
+   , где `1` - это идентификатор задачи, которую нужно редактировать.
+
+- Через консоль H2:
+
+   Открыть консоль H2 по адресу `http://localhost:8080/h2-console` и выполнить SQL-запрос:
+
+   ```
+   UPDATE task
+   SET title = 'Updated Task', description = 'Updated Description for Task', due_date = '2023-12-31', priority = 'High', completed = TRUE
+   WHERE id = 1;
+   ```
+
+- Через браузер:
+
+   Использовать инструмент разработчика браузера (например, Chrome DevTools) для отправки PUT-запроса:
+
+   ```javascript
+   fetch('http://localhost:8080/tasks/1', {
+       method: 'PUT',
+       headers: {
+           'Content-Type': 'application/json'
+       },
+       body: JSON.stringify({
+           title: 'Updated Task',
+           description: 'Updated Description for Task',
+           dueDate: '2023-12-31',
+           priority: 'High',
+           completed: true
+       })
+   })
+   .then(response => response.json())
+   .then(data => console.log(data))
+   .catch(error => console.error('Error:', error));
+   ```
+
+#### Редактирование подписчика
+
+- Через терминал:
+
+   Открыть терминал и ввести команду для редактирования подписчика:
+
+   ```sh
+   curl -X PUT http://localhost:8080/subscribers/1 -H "Content-Type: application/json" -d '{
+       "fullName": "Updated Subscriber",
+       "emailAddress": "updatedsubscriber@example.com"
+   }'
+   ```
+
+   , где `1` - это идентификатор подписчика, которого нужно редактировать.
+
+- Через консоль H2:
+
+   Открыть консоль H2 по адресу `http://localhost:8080/h2-console` и выполнить SQL-запрос:
+
+   ```
+   UPDATE subscriber
+   SET full_name = 'Updated Subscriber', email_address = 'updatedsubscriber@example.com'
+   WHERE id = 1;
+   ```
+
+- Через браузер:
+
+   Использовать инструмент разработчика браузера (например, Chrome DevTools) для отправки PUT-запроса:
+
+   ```javascript
+   fetch('http://localhost:8080/subscribers/1', {
+       method: 'PUT',
+       headers: {
+           'Content-Type': 'application/json'
+       },
+       body: JSON.stringify({
+           fullName: 'Updated Subscriber',
+           emailAddress: 'updatedsubscriber@example.com'
+       })
+   })
+   .then(response => response.json())
+   .then(data => console.log(data))
+   .catch(error => console.error('Error:', error));
+   ```
+
+### Удаление данных в базе данных
+
+#### Удаление задачи
+
+- Через терминал
+
+   Открыть терминал и ввести команду для удаления задачи:
+
+   ```sh
+   curl -X DELETE http://localhost:8080/tasks/1
+   ```
+
+   , где `1` - это идентификатор задачи, которую нужно удалить.
+
+- Через консоль H2:
+
+   Открыть консоль H2 по адресу `http://localhost:8080/h2-console` и выполнить SQL-запрос:
+
+   ```
+   DELETE FROM task WHERE id = 1;
+   ```
+
+- Через браузер:
+
+   Использовать инструмент разработчика браузера (например, Chrome DevTools) для отправки DELETE-запроса:
+
+   ```javascript
+   fetch('http://localhost:8080/tasks/1', {
+       method: 'DELETE'
+   })
+   .then(response => response.json())
+   .then(data => console.log(data))
+   .catch(error => console.error('Error:', error));
+   ```
+
+#### Удаление подписчика
+
+- Через терминал6
+
+   Открыть терминал и ввести команду для удаления подписчика:
+
+   ```sh
+   curl -X DELETE http://localhost:8080/subscribers/1
+   ```
+
+   , где `1` - это идентификатор подписчика, которого нужно удалить.
+
+- Через консоль H2:
+
+   Открыть консоль H2 по адресу `http://localhost:8080/h2-console` и выполнить SQL-запрос:
+
+   ```
+   DELETE FROM subscriber WHERE id = 1;
+   ```
+
+- Через браузер:
+
+   Использовать инструмент разработчика браузера (например, Chrome DevTools) для отправки DELETE-запроса:
+
+   ```javascript
+   fetch('http://localhost:8080/subscribers/1', {
+       method: 'DELETE'
+   })
+   .then(response => response.json())
+   .then(data => console.log(data))
+   .catch(error => console.error('Error:', error));
+   ```
+
+#### Удаление связи в `subscriber_task`
+
+- Через терминал:
+
+   Открыть терминал и ввести команду для удаления связи между задачей и подписчиком:
+
+   ```sh
+   curl -X DELETE http://localhost:8080/subscribers/1/tasks/1
+   ```
+
+   , где `1` - это идентификатор подписчика, а `1` - это идентификатор задачи.
+
+- Через консоль H2:
+
+   Открыть консоль H2 по адресу `http://localhost:8080/h2-console` и выполнить SQL-запрос:
+
+   ```
+   DELETE FROM subscriber_task WHERE subscriber_id = 1 AND task_id = 1;
+   ```
+
+- Через браузер
+
+   Использовать инструмент разработчика браузера (например, Chrome DevTools) для отправки DELETE-запроса:
+
+   ```javascript
+   fetch('http://localhost:8080/subscribers/1/tasks/1', {
+       method: 'DELETE'
+   })
+   .then(response => response.json())
+   .then(data => console.log(data))
+   .catch(error => console.error('Error:', error));
+   ```
+
 
 ### Остановка приложения
 
